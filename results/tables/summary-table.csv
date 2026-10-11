@@ -1,0 +1,4 @@
+"Variable","Type","Missing","Mean","SD","Min","Median","Max","Categories"
+"Gender","factor",0,NA,NA,NA,NA,NA,"M: 4, F: 3, O: 2"
+"Height","numeric",0,165.7,16,133,166,183,NA
+"Weight","numeric",0,70.1,21.2,45,70,110,NA

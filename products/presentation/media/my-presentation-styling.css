@@ -1,0 +1,97 @@
+/* Simple Reveal.js styling for the example Quarto presentation. */
+
+:root {
+  --mds-blue: #123c66;
+  --mds-border: #cfd7e0;
+}
+
+.reveal {
+  color: #111;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  color: var(--mds-blue);
+}
+
+/* Leave normal space below slide titles so headings cannot overlap content. */
+.reveal h2 {
+  margin-bottom: 0.6em;
+}
+
+.reveal img {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+}
+
+.reveal .figure,
+.reveal figure {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.reveal figcaption,
+.reveal .caption {
+  margin: 0.25em auto 0;
+}
+
+.reveal iframe {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reveal li:not(:last-child) {
+  margin-bottom: 0.2em;
+}
+
+/* Optional utility styles that can be used in future example slides. */
+#mytextbox {
+  border: 0.2em solid var(--mds-border);
+  padding: 0.5em;
+  color: #111;
+  font-weight: normal;
+}
+
+#bigfont {
+  font-size: 300%;
+  font-weight: bold;
+}
+
+#myimage {
+  max-height: 60vh;
+}
+
+#verysmall,
+.verysmall {
+  font-size: 55%;
+}
+
+.small {
+  font-size: 70%;
+}
+
+.smallfont pre {
+  font-size: 55%;
+}
+
+#classname {
+  color: var(--mds-blue);
+  font-size: 120%;
+  font-weight: bold;
+  text-align: center;
+}
+
+#classauthor {
+  color: #111;
+  font-weight: normal;
+  text-align: center;
+}
+
+#mylicense {
+  font-size: 70%;
+  text-align: center;
+}

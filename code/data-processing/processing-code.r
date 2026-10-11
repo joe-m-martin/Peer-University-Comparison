@@ -1,0 +1,202 @@
+###############################
+# processing script
+#
+# Purpose:
+#   Load the raw example data, inspect it, clean the problematic entries, and
+#   save the processed analysis dataset.
+#
+# Inputs:
+#   data/raw-data/example-data.xlsx (sheets: data and Codebook)
+#
+# Outputs:
+#   data/processed-data/processed-data.rds
+#
+# How to run:
+#   Rscript code/data-processing/processing-code.r
+#
+# Note the ## ---- name ---- notation
+# This is done so one can pull in the chunks of code into the Quarto document
+# see here: https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html
+###############################
+
+
+## ---- packages --------
+# Check that the packages this script needs are available, and stop with an
+# actionable message if one is missing. This is friendlier than discovering a
+# missing package halfway through a run. Note that we only check; we never
+# install. Installing packages from inside an analysis script would silently
+# change the environment the results were produced in.
+required_packages <- c("readxl", "dplyr", "tidyr", "skimr", "here")
+for (pkg in required_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop("Required package '", pkg, "' is not installed.\n",
+         "Install it with install.packages(\"", pkg, "\") and rerun this script.")
+  }
+}
+
+library(readxl) #for loading Excel files
+library(dplyr) #for data processing/cleaning
+library(tidyr) #for data processing/cleaning
+library(skimr) #for nice visualization of data
+library(here) #to set paths
+
+
+## ---- loaddata --------
+#path to data
+#note the use of the here() package and not absolute paths
+data_location <- here::here("data","raw-data","example-data.xlsx")
+#load data.
+#note that for functions that come from specific packages (instead of base R)
+# I often specify both package and function like so
+#package::function() that's not required one could just call the function
+#specifying the package makes it clearer where the function "lives",
+#but it adds typing. You can do it either way.
+
+# Stop early if the raw data is not where we expect it. A clear message here is
+# much easier to act on than an error from deep inside a later step.
+if (!file.exists(data_location)) {
+  stop("Raw data file not found at:\n  ", data_location,
+       "\nCheck that you are working from the project root folder.")
+}
+# The codebook lives in a second sheet. Check it exists before reading it, so a
+# restructured Excel file fails loudly instead of quietly losing the metadata.
+if (!"Codebook" %in% readxl::excel_sheets(data_location)) {
+  stop("The raw data file has no 'Codebook' sheet. Found: ",
+       paste(readxl::excel_sheets(data_location), collapse = ", "))
+}
+
+rawdata <- readxl::read_excel(data_location)
+# We might also want to load the codebook to look at it
+codebook <- readxl::read_excel(data_location, sheet ="Codebook")
+
+# Check that the variables the cleaning steps below rely on are actually
+# present. If the raw data is ever replaced or restructured, this fails here
+# rather than producing a confusing error further down.
+required_columns <- c("Height", "Weight", "Gender")
+if (!all(required_columns %in% names(rawdata))) {
+  stop("Raw data is missing required column(s): ",
+       paste(setdiff(required_columns, names(rawdata)), collapse = ", "))
+}
+
+
+## ---- exploredata --------
+#take a look at the data
+dplyr::glimpse(rawdata)
+#another way to look at the data
+summary(rawdata)
+#yet another way to get an idea of the data
+head(rawdata)
+#this is a nice way to look at data
+skimr::skim(rawdata)
+#look in the Codebook for a variable explanation
+print(codebook)
+
+
+## ---- cleandata1 --------
+# Inspecting the data, we find some problems that need addressing:
+# First, there is an entry for height which says "sixty" instead of a number.
+# Does that mean it should be a numeric 60? It somehow doesn't make
+# sense since the weight is 60kg, which can't happen for a 60cm person (a baby)
+# Since we don't know how to fix this, we might decide to remove the person.
+# This "sixty" entry also turned all Height entries into characters instead of numeric.
+# That conversion to character also means that our summary function isn't very meaningful.
+# So let's fix that first.
+d1 <- rawdata %>% dplyr::filter( Height != "sixty" ) %>%
+                  dplyr::mutate(Height = as.numeric(Height))
+# look at partially fixed data again
+skimr::skim(d1)
+if (interactive()) hist(d1$Height)
+
+
+## ---- cleandata2 --------
+# Now we see that there is one person with a height of 6.
+# that could be a typo, or someone mistakenly entered their height in feet.
+# If we don't know, we might need to remove this person.
+# But let's assume that we somehow know that this is meant to be 6 feet, so we can convert to centimeters.
+# Height is numeric at this point, so we compare against the number 6, not the
+# string "6". Comparing a numeric column to a string works through silent
+# coercion, but being explicit about the type makes the intent clear.
+d2 <- d1 %>% dplyr::mutate( Height = replace(Height, Height == 6, round(6*30.48,0)) )
+#height values seem ok now
+skimr::skim(d2)
+
+
+## ---- cleandata3 --------
+# now let's look at weight
+# there is a person with weight of 7000, which is impossible,
+# and one person with missing weight.
+# Note that the original data had an empty cell.
+# The codebook says that's not allowed, it should have been NA.
+# R automatically converts empty values to NA.
+# If you don't want that, you can adjust it when you load the data.
+# to be able to analyze the data, we'll remove those individuals as well.
+# Note: Some analysis methods can deal with missing values, so it's not always necessary to remove them.
+# This should be adjusted based on your planned analysis approach.
+d3 <- d2 %>%  dplyr::filter(Weight != 7000) %>% tidyr::drop_na()
+skimr::skim(d3)
+
+
+## ---- cleandata4 --------
+# We also want to have Gender coded as a categorical/factor variable
+# we can do that with simple base R code to mix things up
+d3$Gender <- as.factor(d3$Gender)
+skimr::skim(d3)
+
+
+## ---- cleandata5 --------
+#now we see that there is another NA, but it's not "NA" from R
+#instead it was loaded as character and is now considered as a category.
+#There is also an individual coded as "N" which is not allowed.
+#This could be mistyped M or a mistyped NA. If we have a good guess, we could adjust.
+#If we don't we might need to remove that individual.
+# we'll proceed here by removing both the NA and N individuals
+#since this keeps an empty category, I'm also using droplevels() to get rid of it
+d4 <- d3 %>% dplyr::filter( !(Gender %in% c("NA","N")) ) %>% droplevels()
+skimr::skim(d4)
+
+
+## ---- savedata --------
+# all done, data is clean now.
+# Let's assign at the end to some final variable
+# makes it easier to add steps above
+processeddata <- d4
+
+# This is the most important check in the script. Every cleaning step above
+# removes rows, and dropping the wrong rows is an easy mistake to make and a
+# hard one to notice. We know exactly which 5 individuals should be removed:
+#   1 with Height "sixty", 1 with Weight 7000, 1 with missing Weight,
+#   1 with Gender "NA", and 1 with Gender "N".
+# If that number ever changes, the data or the cleaning logic changed, and we
+# want to stop and look rather than analyze a different sample by accident.
+expected_removed <- 5
+actually_removed <- nrow(rawdata) - nrow(processeddata)
+if (actually_removed != expected_removed) {
+  stop("Cleaning removed ", actually_removed, " rows, but ", expected_removed,
+       " were expected.\n",
+       "Review the raw data and the cleaning steps before using these results.")
+}
+
+# location to save file
+save_data_location <- here::here("data","processed-data","processed-data.rds")
+saveRDS(processeddata, file = save_data_location)
+
+
+
+## ---- notes --------
+# anything you don't want loaded into the Quarto file but
+# keep in the R file, just give it its own label and then don't include that label
+# in the Quarto file
+
+# Dealing with NA or "bad" data:
+# removing anyone who had "faulty" or missing data is one approach.
+# it's often not the best. based on your question and your analysis approach,
+# you might want to do cleaning differently (e.g. keep individuals with some missing information)
+
+# Saving data as RDS:
+# I suggest you save your processed and cleaned data as RDS or RDA/RData files.
+# This preserves coding like factors, characters, numeric, etc.
+# If you save as CSV, that information would get lost.
+# However, CSV is better for sharing with others since it's plain text.
+# If you do CSV, you might want to write down somewhere what each variable is.
+# See here for some suggestions on how to store your processed data:
+# http://www.sthda.com/english/wiki/saving-data-into-r-data-format-rds-and-rdata
