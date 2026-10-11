@@ -1,11 +1,19 @@
-# Modeling and Data Science (MDS) project template
+# Peer University Comparison
 
 ## Overview
 
-This repository contains a template for a reproducible modeling or data science (MDS) project. It is set up to facilitate reproducible and robust workflows that include AI support.
+Higher education is fortunate to have some excellent, well-maintained data resources, like IPEDS, that can provide valuable insights for everyone from students, to administrators, to policy-makers. However, much of this data can be challenging to manage and analyze. This repository aims to take data files from various sources and sites and return them as clean datasets, ready for analysis. 
 
-The default tools to use this template for any MDS project are R, Quarto, Git/GitHub, an IDE (e.g. Positron) and an agentic AI tool. The template structure is workflow-first, so projects can add Python, Julia, shell scripts, or other tools without major reorganization.
+## Data Sources
 
+- [Integrated Postsecondary Education Data System (IPEDS)](https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx)
+- [NSF Higher Education Research and Development Survey (HERD)](https://ncses.nsf.gov/surveys/higher-education-research-development)
+- [NSF Survey of Graduate Students and Postdoctorates in Science and Engineering (GSS)](https://ncses.nsf.gov/surveys/graduate-students-postdoctorates-s-e/)
+- [NSF Survey of Science and Engineering Research Facilities](https://ncses.nsf.gov/surveys/science-engineering-research-facilities/)
+- [Equity in Athletics Data Analysis (EADA)](https://ope.ed.gov/athletics/#/)
+- [College Scorecard](https://collegescorecard.ed.gov/data/)
+- [Post-Secondary Employment Outcomes](https://lehd.ces.census.gov/data/pseo_experimental.html)
+- [Leiden Ranking](https://traditional.leidenranking.com/ranking/)
 
 ## Pre-Requisites
 
