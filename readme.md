@@ -17,23 +17,12 @@ Higher education is fortunate to have some excellent, well-maintained data resou
 
 ## Pre-Requisites
 
-You should have the tools mentioned above installed and be familiar with them. If not, [this website](https://andreashandel.github.io/mds-tools/) provides brief introductory courses to these tools.
-
-You also want a reference manager that can handle BibTeX. Zotero with the Better BibTeX plugin is a good choice.
-
-It is also useful to have a word processor installed, such as MS Word or
-[LibreOffice](https://www.libreoffice.org/). To produce PDF output, you need a
-TeX distribution. TinyTeX is a good option; see the
-[Quarto PDF instructions](https://quarto.org/docs/output-formats/pdf-basics.html).
-
-The example files use these R packages: `broom`, `dplyr`, `flextable`,
-`ggplot2`, `here`, `knitr`, `readxl`, `rmarkdown`, `skimr`, and `tidyr`. Install
-them before running the example workflow:
-
-```r
-install.packages(c("broom", "dplyr", "flextable", "ggplot2", "here", "knitr",
-                   "readxl", "rmarkdown", "skimr", "tidyr"))
-```
+- Python/Jupyter Notebooks
+- Anaconda environment with the following packages installed:
+	- `pandas`
+	- `numpy
+	- `pyprojroot`
+	- `os`
 
 ## Getting Started
 
