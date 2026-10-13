@@ -20,7 +20,7 @@ Higher education is fortunate to have some excellent, well-maintained data resou
 - Python/Jupyter Notebooks
 - Anaconda environment with the following packages installed:
 	- `pandas`
-	- `numpy
+	- `numpy`
 	- `pyprojroot`
 	- `os`
 
