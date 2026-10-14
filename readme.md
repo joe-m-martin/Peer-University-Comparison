@@ -4,6 +4,10 @@
 
 Higher education is fortunate to have some excellent, well-maintained data resources, like IPEDS, that can provide valuable insights for everyone from students, to administrators, to policy-makers. However, much of this data can be challenging to manage and analyze. This repository aims to take data files from various sources and sites and return them as clean datasets, ready for analysis. 
 
+
+
+
+
 ## Data Sources
 
 - [Integrated Postsecondary Education Data System (IPEDS)](https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx)
